@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(express.json()); // allows us to parse incoming request bodies as JSON --> req.body
+
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
