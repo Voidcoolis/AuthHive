@@ -8,7 +8,7 @@ export const signup = async (req, res) => {
   const { email, password, name } = req.body; // Destructure the request body to get email, password, and name
 
   try {
-    // Validate required fields
+    // Validation - Check all required fields are present
     if (!email || !password || !name) {
       throw new Error("All fields are required");
     }
@@ -52,14 +52,18 @@ export const signup = async (req, res) => {
   }
 };
 
+//! EMAIL VERIFICATION CONTROLLER : Validates the 6-digit code sent to user's email
+// Flow: Find user → Verify code → Mark verified → Send welcome
 export const verifyEmail = async (req, res) => {
   const { code } = req.body;
   try {
+    //* Find user with matching non-expired token
     const user = await User.findOne({
       verificationToken: code,
       verificationTokenExpiresAt: { $gt: Date.now() },
     });
 
+    // Handle invalid/expired codes
     if (!user) {
       return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
     }
@@ -76,7 +80,7 @@ export const verifyEmail = async (req, res) => {
       message: "Email verified successfully",
       user: {
         ...user._doc,
-        password: undefined,
+        password: undefined, // Never expose password
       },
     });
   } catch (error) {
@@ -85,11 +89,41 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
+//! LOGIN CONTROLLER: Authenticates existing users
+// Flow: Find user → Verify password → Update last login → Set cookie
 export const login = async (req, res) => {
-  res.send("Login route");
+	const { email, password } = req.body; // Extract credentials from request
+	
+  try {
+		const user = await User.findOne({ email });
+		if (!user) {
+			return res.status(400).json({ success: false, message: "Invalid credentials" });
+		}
+		const isPasswordValid = await bcryptjs.compare(password, user.password); // Compare the provided password with the hashed password in the database
+		if (!isPasswordValid) {
+			return res.status(400).json({ success: false, message: "Invalid credentials" });
+		}
+
+		generateTokenAndSetCookie(res, user._id);
+
+		user.lastLogin = new Date(); // Update last login timestamp
+		await user.save();
+
+		res.status(200).json({
+			success: true,
+			message: "Logged in successfully",
+			user: {
+				...user._doc,
+				password: undefined,
+			},
+		});
+	} catch (error) {
+		console.log("Error in login ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
 };
 
 export const logout = async (req, res) => {
-	res.clearCookie("token"); // from generateTokenAndSetCookie.js
+	res.clearCookie("token");  // Clear the authentication cookie: Matches cookie name from generateTokenAndSetCookie.js
 	res.status(200).json({ success: true, message: "Logged out successfully" });
 };
