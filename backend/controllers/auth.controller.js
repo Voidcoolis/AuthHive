@@ -90,5 +90,6 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  res.send("Logut route");
+	res.clearCookie("token"); // from generateTokenAndSetCookie.js
+	res.status(200).json({ success: true, message: "Logged out successfully" });
 };
