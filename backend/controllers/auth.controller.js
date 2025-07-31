@@ -1,7 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 import crypto from "crypto";
 
 // Signup controller - Creates a new user account
@@ -159,3 +159,40 @@ export const forgotPassword = async (req, res) => {
 		res.status(400).json({ success: false, message: error.message });
 	}
   };
+
+  // PASSWORD RESET CONTROLLER - Handles actual password update with valid token
+  //  Flow: Validate token → Hash new password → Clear token → Send confirmation
+  export const resetPassword = async (req, res) => {
+	try {
+		const { token } = req.params; // Extract token from URL
+		const { password } = req.body;  // Extract new password from request body
+
+    //  Find user with valid non-expired token
+		const user = await User.findOne({
+			resetPasswordToken: token,
+			resetPasswordExpiresAt: { $gt: Date.now() },
+		});
+
+    // Handle invalid/expired tokens
+		if (!user) {
+			return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+		}
+
+		// Hash new password before storage
+		const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Update password and clear reset fields
+		user.password = hashedPassword;
+		user.resetPasswordToken = undefined;
+		user.resetPasswordExpiresAt = undefined;
+		await user.save();
+
+    // Send password change confirmation
+		await sendResetSuccessEmail(user.email);
+
+		res.status(200).json({ success: true, message: "Password reset successful" });
+	} catch (error) {
+		console.log("Error in resetPassword ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
+};
