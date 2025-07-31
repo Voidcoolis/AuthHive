@@ -106,18 +106,6 @@ This implementation provides a clean, maintainable email service layer that hand
 ## Purpose
 Authenticates incoming requests by verifying JSON Web Tokens (JWT) from HTTP-only cookies.
 
-## Flow
-```mermaid
-graph TD
-    A[Start] --> B{Token exists?}
-    B -->|No| C[Return 401 Unauthorized]
-    B -->|Yes| D[Verify Token]
-    D --> E{Valid?}
-    E -->|No| F[Return 401/500]
-    E -->|Yes| G[Attach userId to request]
-    G --> H[Call next()]
-```
-
 ## Security Features
 - **HTTP-only cookies**: Prevents XSS attacks
 - **Environment secret**: Uses *process.env.JWT_SECRET*
