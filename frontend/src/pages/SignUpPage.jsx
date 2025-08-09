@@ -3,16 +3,19 @@ import Input from "../components/Input";
 import { Loader, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { signup, isLoading, error } = useAuthStore();
+  const navigate = useNavigate();
+
   const handleSignUp = async (e) => {
     e.preventDefault();
-
     try {
       await signup(email, password, name);
       navigate("/verify-email");
@@ -20,6 +23,7 @@ const SignUpPage = () => {
       console.log(error);
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,6 +62,7 @@ const SignUpPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           
+          {error && <p className="text-red-500 font-semibold mt-2">{error}</p>}
           {/* Password strength meter component with password as the argument */}
           <PasswordStrengthMeter password={password} />
 
@@ -71,15 +76,20 @@ const SignUpPage = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
+            disabled={isLoading}
           >
-            Sign Up
+            {isLoading ? (
+              <Loader className=" animate-spin mx-auto" size={24} />
+            ) : (
+              "Sign Up"
+            )}
           </motion.button>
         </form>
       </div>
-      <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
+      <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <p className="text-sm text-gray-400">
           Already have an account?{" "}
-          <Link to={"/login"} className='text-orange-400 hover:underline'>
+          <Link to={"/login"} className="text-orange-400 hover:underline">
             Login
           </Link>
         </p>
