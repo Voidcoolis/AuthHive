@@ -58,7 +58,8 @@ const SignUpPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           
-          {/* Password strength meter */}
+          {/* Password strength meter component with password as the argument */}
+          <PasswordStrengthMeter password={password} />
 
           <motion.button
             className="mt-5 w-full py-3 px-4 

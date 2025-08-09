@@ -72,6 +72,7 @@ const PasswordStrengthMeter = ({ password }) => {
 
       {/* Visual strength meter with 4 bars */}
       <div className="flex space-x-1">
+        {/* Create 4 empty slots to render strength bars (0-3) */}
         {[...Array(4)].map((_, index) => (
           <div
             key={index}
@@ -81,7 +82,7 @@ const PasswordStrengthMeter = ({ password }) => {
           />
         ))}
       </div>
-      
+
       {/* Display password criteria checklist */}
       <PasswordCriteria password={password} />
     </div>
