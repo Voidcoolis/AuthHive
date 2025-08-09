@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 const EmailVerificationPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]); // Assuming a 6-digit code
   const inputRefs = useRef([]); // refs for each input field to manage focus (track input)
   const navigate = useNavigate();
+
+  const { error, isLoading, verifyEmail } = useAuthStore();
 
   //   Handles changes in verification code inputs
   const handleChange = (index, value) => {
@@ -43,10 +47,16 @@ const EmailVerificationPage = () => {
 		}
 	};
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 		e.preventDefault(); //so that the form does not refresh the page
 		const verificationCode = code.join(""); // Combine array into string
-		console.log("Verification Code Submitted:", verificationCode);
+		try {
+			await verifyEmail(verificationCode);
+			navigate("/"); //navigate to home page after successful verification
+			toast.success("Email verified successfully");
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
     // Effect to auto-submit when all 6 digits are entered
@@ -104,13 +114,14 @@ const EmailVerificationPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
+            disabled={isLoading || code.some((digit) => !digit)}
             className="w-full bg-gradient-to-r from-orange-500 to-pink-500 
               text-white font-bold py-3 px-4 rounded-lg shadow-lg 
               hover:from-orange-600 hover:to-pink-600 
               focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 
               disabled:opacity-50 transition duration-200"
           >
-            Verify Email
+            {isLoading ? "Verifying..." : "Verify Email"}
           </motion.button>
         </form>
       </motion.div>
