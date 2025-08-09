@@ -56,6 +56,17 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  logout: async () => {
+		set({ isLoading: true, error: null });
+		try {
+			await axios.post(`${API_URL}/logout`);
+			set({ user: null, isAuthenticated: false, error: null, isLoading: false });
+		} catch (error) {
+			set({ error: "Error logging out", isLoading: false });
+			throw error;
+		}
+	},
+
   verifyEmail: async (code) => { // in the backend we get "code" from req.body
 		set({ isLoading: true, error: null });
 		try {
@@ -70,6 +81,7 @@ export const useAuthStore = create((set) => ({
 
     // Check Authentication Status - Runs on app startup to verify if user is logged in
     checkAuth: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate delay
 		set({ isCheckingAuth: true, error: null });
 		try {
 			const response = await axios.get(`${API_URL}/check-auth`);
