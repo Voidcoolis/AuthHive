@@ -28,13 +28,13 @@ cd AuthHive
 ### 2. Setup Environment Variables
 Create a .env file in the root and add the following (replace with your own secrets):
 
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLIENT_URL=http://localhost:5173
-MAILTRAP_TOKEN=your_mailtrap_api_token
-MAILTRAP_ENDPOINT=your_mailtrap_endpoint
-NODE_ENV=development
-PORT=5000
+- MONGODB_URI=your_mongodb_connection_string
+- JWT_SECRET=your_jwt_secret
+- CLIENT_URL=http://localhost:5173
+- MAILTRAP_TOKEN=your_mailtrap_api_token
+- MAILTRAP_ENDPOINT=your_mailtrap_endpoint
+- NODE_ENV=development
+- PORT=5000
 
 ### 3. Install Dependencies
 
