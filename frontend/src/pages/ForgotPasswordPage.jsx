@@ -11,7 +11,7 @@ const ForgotPasswordPage = () => {
 
   const { isLoading, forgotPassword } = useAuthStore();
 
-//   Handles form submission for password reset
+  //   Handles form submission for password reset
   const handleSubmit = async (e) => {
     e.preventDefault();
     await forgotPassword(email);
@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }} // Start state (hidden, slightly below)
       animate={{ opacity: 1, y: 0 }} // End state (visible, normal position)
-      transition={{ duration: 0.5 }}  // Animation duration
+      transition={{ duration: 0.5 }} // Animation duration
       className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
     >
       <div className="p-8">
@@ -56,7 +56,7 @@ const ForgotPasswordPage = () => {
 							focus:ring-offset-gray-900 transition duration-200"
               type="submit"
             >
-                {/* Show loader when submitting */}
+              {/* Show loader when submitting */}
               {isLoading ? (
                 <Loader className="size-6 animate-spin mx-auto" />
               ) : (
@@ -65,14 +65,14 @@ const ForgotPasswordPage = () => {
             </motion.button>
           </form>
         ) : (
-            // Success message after submission
+          // Success message after submission
           <div className="text-center">
-               {/* Animated checkmark circle */}
+            {/* Animated checkmark circle */}
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-             className='w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4'
+              className="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4"
             >
               <Mail className="h-8 w-8 text-white" />
             </motion.div>
@@ -84,7 +84,7 @@ const ForgotPasswordPage = () => {
         )}
       </div>
 
-        {/* Footer with back to login link */}
+      {/* Footer with back to login link */}
       <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <Link
           to={"/login"}
