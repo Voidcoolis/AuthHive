@@ -11,22 +11,25 @@ const ResetPasswordPage = () => {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const { resetPassword, error, isLoading, message } = useAuthStore();
 
+    // Get token from URL params and navigate function for redirection
 	const { token } = useParams();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+        // Validate password match
 		if (password !== confirmPassword) {
 			alert("Passwords do not match");
 			return;
 		}
 		try {
+            // Call resetPassword function from auth store with token and new password
 			await resetPassword(token, password);
 
 			toast.success("Password reset successfully, redirecting to login page...");
 			setTimeout(() => {
-				navigate("/login");
+				navigate("/login"); // Navigate to login page after 2 seconds
 			}, 2000);
 		} catch (error) {
 			console.error(error);
